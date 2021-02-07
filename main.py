@@ -8,7 +8,7 @@ from decouple import config
 api_id = config('API_ID')
 api_hash = config('API_HASH')
 
-client = TelegramClient('anon', api_id, api_hash)
+client = TelegramClient('botdb', api_id, api_hash)
 
 headers = {
     'Content-Type': 'application/json'
@@ -20,10 +20,10 @@ async def read_image():
     return image_to_string(Image.open('images/image.png'))
 
 
-async def send_text(text):
+async def send_text(text, img):
     data = dict(
         text=text,
-        img=False
+        img=img
     )
 
     data = json.dumps(data)
@@ -38,10 +38,10 @@ async def my_event_handler(msg):
         await client.download_media(msg.media, 'images/image.png')
         print('Image saved')
         text = await read_image()
+        await send_text(text, True)
     else:
         text = msg.message.message
-
-    await send_text(text)
+        await send_text(text, False)
 
 
 client.start()
